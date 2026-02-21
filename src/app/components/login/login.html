@@ -1,0 +1,17 @@
+<div class="container">
+<form [formGroup]="formulario">
+  <div class="form-group">
+    <label for="inputEmail">Email</label>
+    <input type="email" class="form-control" id="inputEmail" formControlName="email"
+    aria-describedby="emailHelp"
+    [ngClass]="{'is-invalid' : emailNotValid, 'is-valid': emailValid}">>
+  </div>
+
+  <div class="form-group">
+    <label for="inputPassword">Password</label>
+    <input type="password" class="form-control" id="inputPassword" formControlName="password">
+  </div>
+  <button type="submit" class="btn btn-primary" (click)="login()">Submit</button>
+</form>
+{{formulario.value| json}}
+</div>

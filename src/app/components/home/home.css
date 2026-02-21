@@ -1,0 +1,27 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 56px);
+  background: url('/fondo.png') center 10% / cover no-repeat fixed;
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  /* Filtro para opacidad
+   -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  */
+  color: white;
+}
+
+.hero p{
+  text-shadow: 2px 2px 2px black;
+}
+
+.hero a:hover {
+  color: #01ff62;
+}

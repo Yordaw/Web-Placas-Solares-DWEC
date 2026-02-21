@@ -1,0 +1,87 @@
+@if (planta(); as p) {
+  <div class="container mt-5">
+    <div class="row">
+      <!-- Imagen grande -->
+      <div class="col-lg-6 mb-4">
+        <img [src]="p.foto" alt="{{p.nom}}" class="img-fluid rounded shadow">
+      </div>
+
+      <!-- Información de la planta -->
+      <div class="col-lg-6">
+        <h1 class="mb-3">{{p.nom}}</h1>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Información General</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>ID:</strong>
+              <span>{{p.id}}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Usuario:</strong>
+              <span>{{p.user}}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Fecha de creación:</strong>
+              <span>{{ p.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Ubicación</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Latitud:</strong>
+              <span>{{p.ubicacio.coordenadas.lat}}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Longitud:</strong>
+              <span>{{p.ubicacio.coordenadas.lon}}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Capacidad</h5>
+          </div>
+          <div class="card-body">
+            <h2 class="text-primary">{{p.capacitat}} MW</h2>
+          </div>
+        </div>
+
+        <a routerLink="/plantes" class="btn btn-outline-secondary">Volver a la lista</a>
+      </div>
+    </div>
+
+    <!-- Registros -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex align-items-center">
+            <h5 class="mb-0">Registros</h5>
+            <button type="button" class="btn ms-auto"
+              [class]="registerService.isRunning() ? 'btn-danger' : 'btn-success'"
+              (click)="registerService.toggleRegistration()">
+              {{ registerService.isRunning() ? 'Detener' : 'Ver en vivo' }}
+            </button>
+          </div>
+          <div class="card-body">
+            <canvas #chart></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+} @else {
+  <div class="container mt-5 text-center">
+    <h2>Planta no encontrada</h2>
+    <a routerLink="/plantes" class="btn btn-outline-secondary">Volver a la lista</a>
+  </div>
+}
