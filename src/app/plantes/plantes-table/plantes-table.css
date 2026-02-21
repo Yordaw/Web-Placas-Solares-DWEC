@@ -41,6 +41,12 @@
 .table {
   color: #ffffff;
   margin-bottom: 0;
+  --bs-table-bg: transparent;
+  --bs-table-color: #ffffff;
+  --bs-table-striped-bg: rgba(22, 74, 65, 0.45);
+  --bs-table-striped-color: #ffffff;
+  --bs-table-hover-bg: rgba(241, 178, 74, 0.12);
+  --bs-table-hover-color: #ffffff;
 }
 
 .table thead {
@@ -64,8 +70,18 @@
   transition: all 0.3s ease;
 }
 
-.table tbody tr:hover {
-  background-color: rgba(241, 178, 74, 0.1) !important;
+.table.table-striped > tbody > tr:nth-of-type(odd) > *,
+.table.table-striped > tbody > tr:nth-of-type(even) > * {
+  background-color: rgba(22, 74, 65, 0.45) !important;
+}
+
+.table tbody tr td,
+.table.table-striped > tbody > tr > td {
+  color: #ffffff !important;
+}
+
+.table.table-hover > tbody > tr:hover > * {
+  background-color: rgba(241, 178, 74, 0.12) !important;
 }
 
 .btn-warning {

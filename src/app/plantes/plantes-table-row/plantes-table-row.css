@@ -2,4 +2,9 @@ td {
   color: rgba(255, 255, 255, 0.95);
   padding: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(22, 74, 65, 0.45);
+}
+
+tr:hover td {
+  background-color: rgba(241, 178, 74, 0.12);
 }
