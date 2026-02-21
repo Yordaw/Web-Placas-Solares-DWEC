@@ -1,15 +1,89 @@
 .site-header {
-  background-color: rgba(0, 0, 0, 0.85);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
+  /*-webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);*/
+  background: #164A41;
+  background: linear-gradient(90deg, rgba(22, 74, 65, 1) 0%, rgba(77, 119, 78, 1) 19%, rgba(157, 200, 141, 1) 100%);
 }
 
 .site-header a {
-  color: #999999;
+  color: #ffffff;
   text-decoration: none;
+  font-size: 1.2em;
   transition: color ease-in-out 0.15s;
 }
 
 .site-header a:hover {
-  color: #01ff62;
+  color: #f1b24a;
+}
+
+.site-header a.active-link {
+  color: #f1b24a;
+  font-weight: 600;
+}
+
+.logoutbtt {
+  color: #ffffff;
+  background-color:  #f1b24a;
+  border-radius: 999px;
+  padding: 0.6rem 1.6rem;
+  transition: ease-in-out 0.2s;
+  font-size: 1.2em;
+}
+
+.logoutbtt:hover{
+  background-color:  rgb(175, 31, 31);
+  border-radius: 999px;
+}
+
+.lupa{
+  border-radius: 999px;
+  padding: 0.6rem 1.6rem;
+  border:2px solid #f1b24a
+}
+
+.lupa:hover{
+  background-color: #f1b24a;
+  border: 1px solid #ffffff;
+}
+
+.campobuscar{
+  color: #ffffff;
+  background-color: #f1b24a;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #164A41;
+  border: 1px solid #f1b24a;
+  border-radius: 8px;
+  min-width: 160px;
+  z-index: 1000;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+  transition: background-color ease-in-out 0.15s;
+}
+
+.dropdown-item:hover {
+  background-color: #965d02;
+}
+
+.dropdown button:hover{
+  background-color: #164a41;
+  color: #ffffff;
 }

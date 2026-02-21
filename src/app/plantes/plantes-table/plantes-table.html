@@ -1,9 +1,20 @@
 <div class="container  mt-4">
   <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex align-items-center">
       <h5 class="mb-0">Lista de Plantas Solares</h5>
+      @if (isAdmin()) {
+        <button class="btn btn-primary btn-sm ms-auto" type="button" (click)="openCreateForm()">Nueva Planta</button>
+      }
     </div>
     <div class="card-body">
+      @if (errorMessage()) {
+        <div class="alert alert-danger">{{ errorMessage() }}</div>
+      }
+
+      @if (successMessage()) {
+        <div class="alert alert-success">{{ successMessage() }}</div>
+      }
+
       <div class="table-responsive">
         <table class="table table-striped table-hover">
           <thead class="table-dark">
@@ -12,17 +23,116 @@
               <th scope="col">Ubicacio</th>
               <th scope="col">Usuari</th>
               <th scope="col">Capacitat</th>
+              @if (isAdmin()) {
+                <th scope="col">Acción</th>
+              }
             </tr>
           </thead>
           <tbody>
 
-            @for(planta of plantes();track planta.id){
-              <tr app-plantes-table-row [plantaId]="planta"></tr>
+            @for(planta of filteredPlantes(); track planta.id){
+              <tr>
+                <td>{{ planta.nom }}</td>
+                <td>{{ getCoordText(planta) }}</td>
+                <td>{{ planta.user }}</td>
+                <td>{{ planta.capacitat }}</td>
+                @if (isAdmin()) {
+                  <td>
+                    <button class="btn btn-sm btn-warning me-2" type="button" (click)="openEditForm(planta)">Editar</button>
+                    <button class="btn btn-sm btn-danger" type="button" (click)="deletePlanta(planta)">Borrar</button>
+                  </td>
+                }
+              </tr>
             }
 
           </tbody>
         </table>
       </div>
+
+      @if (isAdmin() && showForm()) {
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="mb-0">{{ isEditing() ? 'Editar Planta' : 'Nueva Planta' }}</h6>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="nom">Nombre</label>
+                <input
+                  id="nom"
+                  class="form-control"
+                  type="text"
+                  [value]="formNom()"
+                  (input)="formNom.set($any($event.target).value)"
+                >
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="capacitat">Capacidad (MW)</label>
+                <input
+                  id="capacitat"
+                  class="form-control"
+                  type="number"
+                  [value]="formCapacitat()"
+                  (input)="formCapacitat.set($any($event.target).value)"
+                >
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="lat">Latitud</label>
+                <input
+                  id="lat"
+                  class="form-control"
+                  type="number"
+                  [value]="formLatitude()"
+                  (input)="formLatitude.set($any($event.target).value)"
+                >
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="lon">Longitud</label>
+                <input
+                  id="lon"
+                  class="form-control"
+                  type="number"
+                  [value]="formLongitude()"
+                  (input)="formLongitude.set($any($event.target).value)"
+                >
+              </div>
+
+              <div class="col-12">
+                <button class="btn btn-outline-primary" type="button" [disabled]="isSubmitting()" (click)="useCurrentLocation()">
+                  Usar ubicación actual
+                </button>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="foto">Foto</label>
+                <input
+                  id="foto"
+                  class="form-control"
+                  type="file"
+                  accept="image/*"
+                  (change)="onImageSelected($event)"
+                >
+              </div>
+
+              @if (imagePreview()) {
+                <div class="col-12">
+                  <img [src]="imagePreview()" alt="Preview" class="img-thumbnail image-preview">
+                </div>
+              }
+
+              <div class="col-12 d-flex gap-2">
+                <button class="btn btn-success" type="button" [disabled]="isSubmitting()" (click)="submitForm()">
+                  {{ isEditing() ? 'Guardar Cambios' : 'Crear' }}
+                </button>
+                <button class="btn btn-secondary" type="button" [disabled]="isSubmitting()" (click)="cancelForm()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>

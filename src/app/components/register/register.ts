@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { Supaservice } from '../../services/supaservice';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -12,8 +13,11 @@ import { Supaservice } from '../../services/supaservice';
 export class Register {
   formBuilder: FormBuilder = inject(FormBuilder);
   supaservice: Supaservice = inject(Supaservice);
+  router: Router = inject(Router);
   formulario: FormGroup;
-  errorMessage = signal('');
+  errorMessage = '';
+  successMessage = '';
+  isSubmitting = false;
 
   constructor(){
     this.formulario = this.formBuilder.group(
@@ -35,14 +39,49 @@ export class Register {
     return null;
   }
 
-  register(){
-    if (this.formulario.valid){
-      this.errorMessage.set('');
-      const { email, password } = this.formulario.value;
-      this.supaservice.register({ email, password });
-    } else {
-      this.errorMessage.set('Formulario no valido');
+  async register() {
+    if (this.formulario.invalid) {
+      this.formulario.markAllAsTouched();
+      this.errorMessage = 'Formulario no valido';
+      this.successMessage = '';
+      return;
     }
+
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    const { email, password } = this.formulario.value as { email: string; password: string };
+
+    try {
+      await this.supaservice.register({ email, password });
+      this.successMessage = 'Registro completado correctamente. Ya puedes iniciar sesion';
+      this.formulario.reset();
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1200);
+    } catch (error: any) {
+      this.errorMessage = this.getRegisterErrorMessage(error);
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
+
+  private getRegisterErrorMessage(error: any): string {
+    const rawMessage = (error?.message ?? '').toString().toLowerCase();
+
+    if (rawMessage.includes('user already registered')) {
+      return 'Este email ya esta registrado';
+    }
+
+    if (rawMessage.includes('password')) {
+      return 'La password no cumple los requisitos';
+    }
+
+    if (rawMessage.includes('email')) {
+      return 'Email no valido';
+    }
+
+    return error?.message ?? 'No se pudo completar el registro';
   }
 
   get emailNotValid() {

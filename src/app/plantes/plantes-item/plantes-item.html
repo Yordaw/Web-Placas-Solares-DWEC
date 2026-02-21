@@ -1,5 +1,5 @@
     <img class="card-img-top" alt="Planta Solar" [src]="planta().foto">
     <h5 class="card-title">{{planta().nom}}</h5>
-    <p class="card-text">Latitude: {{planta().ubicacio.latitude}}, Longitude: {{planta().ubicacio.longitude}}</p>
+    <p class="card-text">Latitude: {{ getLatitude() }}, Longitude: {{ getLongitude() }}</p>
     <p class="card-text">{{planta().capacitat}} MW</p>
     <a class="btn btn-primary" [routerLink]="['/planta', planta().id]">Estadisticas</a>

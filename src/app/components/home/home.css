@@ -1,8 +1,11 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 56px);
-  background: url('/fondo.png') center 10% / cover no-repeat fixed;
+  min-height: calc(100vh - 125px);
+  /*background: url('/fondo.png') center 10% / cover no-repeat fixed;*/
+  /*background-color: #26e2aa;*/
+  background: #164A41;
+  background: linear-gradient(90deg, rgba(22, 74, 65, 1) 0%, rgba(77, 119, 78, 1) 19%, rgba(157, 200, 141, 1) 100%);
 }
 
 .hero {
@@ -10,18 +13,69 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  /* Filtro para opacidad
-   -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  */
+  gap: 1.5rem;
   color: white;
+  position: relative;
+  flex-wrap: wrap;
 }
 
 .hero p{
   text-shadow: 2px 2px 2px black;
 }
 
+.hero-main-title {
+  font-family: "Arial Black", "Segoe UI", sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  font-size: 15em;
+  margin-bottom: -5%;
+}
+
+.hero-subtitle {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.hero-cta {
+  margin-top: 2rem;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  background-color: rgba(202, 202, 202, 0.55);
+}
+.hero-left{
+  flex: 0 1 45%;
+  min-width: 250px;
+}
+
+.hero-right {
+  flex: 0 1 45%;
+  min-width: 250px;
+  margin-left: 0;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 2px 2px 20px rgb(189, 189, 189);
+}
+
 .hero a:hover {
-  color: #01ff62;
+  color: #f1b24a;
+}
+
+.hero-right img{
+  width: 100%;
+  height: auto;
+  animation: slideInRight 0.9s ease-out both;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(180px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

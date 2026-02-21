@@ -1,10 +1,8 @@
-<div class="container mt-5">
-  <div class="row">
-    @for(planta of plantes(); track planta.id) {
-      <div class="col-md-4 mb-4">
-        <div class="card" style="width: 22rem;">
-          <div class="card-body" app-plantes-item [plantaId]="planta"></div>
-        </div>
+<div class="plants-container">
+  <div class="plants-grid">
+    @for(planta of filteredPlantes(); track planta.id) {
+      <div class="card">
+        <div class="card-body" app-plantes-item [plantaId]="planta"></div>
       </div>
     }
   </div>

@@ -1,17 +1,45 @@
-<div class="container">
-<form [formGroup]="formulario">
-  <div class="form-group">
-    <label for="inputEmail">Email</label>
-    <input type="email" class="form-control" id="inputEmail" formControlName="email"
-    aria-describedby="emailHelp"
-    [ngClass]="{'is-invalid' : emailNotValid, 'is-valid': emailValid}">>
-  </div>
+<div id="cuerpo">
+<div class="login-wrapper">
+  <div class="login-container">
+    <h3>Login</h3>
+    <form [formGroup]="formulario" (ngSubmit)="login()">
+    <div class="form-group mb-3">
+      <label for="inputEmail">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="inputEmail"
+        formControlName="email"
+        aria-describedby="emailHelp"
+        [ngClass]="{ 'is-invalid': emailNotValid, 'is-valid': emailValid }"
+      >
+      @if (emailNotValid) {
+        <div class="invalid-feedback">Email no valido</div>
+      }
+    </div>
 
-  <div class="form-group">
-    <label for="inputPassword">Password</label>
-    <input type="password" class="form-control" id="inputPassword" formControlName="password">
+    <div class="form-group mb-3">
+      <label for="inputPassword">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="inputPassword"
+        formControlName="password"
+        [ngClass]="{ 'is-invalid': passwordNotValid }"
+      >
+      @if (passwordNotValid) {
+        <div class="invalid-feedback">Password no valido</div>
+      }
+    </div>
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || isSubmitting">
+      {{ isSubmitting ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
   </div>
-  <button type="submit" class="btn btn-primary" (click)="login()">Submit</button>
-</form>
-{{formulario.value| json}}
+</div>
 </div>

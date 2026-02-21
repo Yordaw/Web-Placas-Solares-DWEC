@@ -1,32 +1,42 @@
-<div class="container mt-4">
-  <h3>Registro</h3>
-  <form [formGroup]="formulario">
-    <div class="form-group mb-3">
-      <label for="inputEmail">Email</label>
-      <input type="email" class="form-control" id="inputEmail" formControlName="email"
-        [ngClass]="{'is-invalid': emailNotValid, 'is-valid': emailValid}">
-    </div>
+<div id="cuerpo">
+  <div class="register-wrapper">
+    <div class="register-container">
+      <h3>Registro</h3>
+      <form [formGroup]="formulario" (ngSubmit)="register()">
+      <div class="form-group mb-3">
+        <label for="inputEmail">Email</label>
+        <input type="email" class="form-control" id="inputEmail" formControlName="email"
+          [ngClass]="{'is-invalid': emailNotValid, 'is-valid': emailValid}">
+      </div>
 
-    <div class="form-group mb-3">
-      <label for="inputPassword">Password</label>
-      <input type="password" class="form-control" id="inputPassword" formControlName="password"
-        [ngClass]="{'is-invalid': passwortdNotValid('password'), 'is-valid': passwordValid('password')}">
-    </div>
+      <div class="form-group mb-3">
+        <label for="inputPassword">Password</label>
+        <input type="password" class="form-control" id="inputPassword" formControlName="password"
+          [ngClass]="{'is-invalid': passwortdNotValid('password'), 'is-valid': passwordValid('password')}">
+      </div>
 
-    <div class="form-group mb-3">
-      <label for="inputPassword2">Confirmar Password</label>
-      <input type="password" class="form-control" id="inputPassword2" formControlName="password2"
-        [ngClass]="{'is-invalid': passwortdNotValid('password2'), 'is-valid': passwordValid('password2')}">
-    </div>
+      <div class="form-group mb-3">
+        <label for="inputPassword2">Confirmar Password</label>
+        <input type="password" class="form-control" id="inputPassword2" formControlName="password2"
+          [ngClass]="{'is-invalid': passwortdNotValid('password2'), 'is-valid': passwordValid('password2')}">
+      </div>
 
-    @if (passwordCrossValidation) {
-      <div class="alert alert-danger">Las contraseñas no coinciden</div>
-    }
+      @if (passwordCrossValidation) {
+        <div class="alert alert-danger">Las contraseñas no coinciden</div>
+      }
 
-    @if (errorMessage()) {
-      <div class="alert alert-danger">{{ errorMessage() }}</div>
-    }
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
 
-    <button type="submit" class="btn btn-primary" (click)="register()">Registrarse</button>
-  </form>
+      @if (successMessage) {
+        <div class="alert alert-success">{{ successMessage }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || isSubmitting">
+        {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}
+      </button>
+    </form>
+  </div>
+</div>
 </div>
