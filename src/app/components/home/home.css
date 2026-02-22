@@ -20,75 +20,6 @@
   overflow: hidden;
 }
 
-.hero::before,
-.hero::after {
-  content: "";
-  position: absolute;
-  left: -8%;
-  width: 116%;
-  pointer-events: none;
-}
-
-.hero::before {
-  bottom: -14px;
-  height: 170px;
-  z-index: 0;
-  opacity: 0.62;
-  background:
-    repeating-linear-gradient(
-      92deg,
-      rgba(34, 112, 79, 0.12) 0 4px,
-      rgba(34, 112, 79, 0.58) 4px 6px,
-      rgba(34, 112, 79, 0.08) 6px 10px,
-      rgba(34, 112, 79, 0) 10px 14px
-    ),
-    repeating-linear-gradient(
-      86deg,
-      rgba(157, 200, 141, 0) 0 7px,
-      rgba(157, 200, 141, 0.25) 7px 8px,
-      rgba(157, 200, 141, 0) 8px 13px
-    ),
-    linear-gradient(
-      to top,
-      rgba(14, 60, 48, 0.96) 0%,
-      rgba(52, 103, 69, 0.76) 54%,
-      rgba(157, 200, 141, 0) 100%
-    );
-  clip-path: polygon(0 100%, 0 74%, 3% 68%, 6% 72%, 9% 64%, 13% 71%, 17% 62%, 21% 73%, 26% 63%, 31% 72%, 37% 61%, 42% 74%, 47% 63%, 53% 72%, 58% 62%, 64% 73%, 70% 64%, 76% 72%, 82% 63%, 88% 74%, 94% 65%, 100% 73%, 100% 100%);
-  transform-origin: center bottom;
-  animation: grassWindBack 7.5s ease-in-out infinite;
-}
-
-.hero::after {
-  bottom: -20px;
-  height: 200px;
-  z-index: 1;
-  opacity: 0.82;
-  background:
-    repeating-linear-gradient(
-      88deg,
-      rgba(35, 118, 81, 0) 0 3px,
-      rgba(35, 118, 81, 0.82) 3px 5px,
-      rgba(35, 118, 81, 0.16) 5px 8px,
-      rgba(35, 118, 81, 0) 8px 11px
-    ),
-    repeating-linear-gradient(
-      82deg,
-      rgba(157, 200, 141, 0) 0 5px,
-      rgba(157, 200, 141, 0.36) 5px 6px,
-      rgba(157, 200, 141, 0) 6px 10px
-    ),
-    linear-gradient(
-      to top,
-      rgba(12, 52, 41, 0.98) 0%,
-      rgba(39, 102, 66, 0.8) 48%,
-      rgba(157, 200, 141, 0) 100%
-    );
-  clip-path: polygon(0 100%, 0 78%, 2% 70%, 5% 76%, 8% 66%, 12% 77%, 16% 63%, 20% 79%, 25% 65%, 30% 77%, 35% 62%, 40% 79%, 45% 66%, 50% 76%, 56% 63%, 62% 78%, 68% 64%, 74% 77%, 80% 65%, 86% 79%, 92% 67%, 96% 75%, 100% 71%, 100% 100%);
-  transform-origin: center bottom;
-  animation: grassWindFront 5.6s ease-in-out infinite;
-}
-
 .hero p{
   text-shadow: 2px 2px 2px black;
 }
@@ -100,6 +31,7 @@
   font-size: 15em;
   margin-bottom: -5%;
   animation: titleReveal 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  /*text-shadow: 1px 1px 150px yellow;*/
 }
 
 .hero-subtitle {
@@ -134,6 +66,7 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+  box-shadow: 2px 2px 120px rgb(201, 201, 129);
   box-shadow: 2px 2px 20px rgb(189, 189, 189);
 }
 
@@ -230,34 +163,12 @@
   }
 }
 
-@keyframes grassWindBack {
-  0%,
-  100% {
-    transform: translateX(0) rotate(0deg);
-  }
-  50% {
-    transform: translateX(-1.2%) rotate(-0.7deg);
-  }
-}
-
-@keyframes grassWindFront {
-  0%,
-  100% {
-    transform: translateX(0) rotate(0deg);
-  }
-  50% {
-    transform: translateX(1.4%) rotate(0.9deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-main-title,
   .hero-subtitle,
   .hero-cta,
   .hero-right img,
-  .hero-right::before,
-  .hero::before,
-  .hero::after {
+  .hero-right::before {
     animation: none !important;
   }
 }
