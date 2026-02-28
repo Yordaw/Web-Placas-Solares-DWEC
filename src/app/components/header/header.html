@@ -1,25 +1,49 @@
 <nav class="site-header sticky-top py-1">
   <div class="container d-flex flex-column flex-md-row justify-content-between">
-    <!--Logo de luz que parece un sol en vez de boton "home", así mola mas -->
-    <a class="py-3" [routerLink]="['/home']" title="Inicio" aria-label="Ir a home">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto">
-        <circle cx="12" cy="12" r="5"></circle>
-        <line x1="12" y1="1" x2="12" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="23"></line>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-        <line x1="1" y1="12" x2="3" y2="12"></line>
-        <line x1="21" y1="12" x2="23" y2="12"></line>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-      </svg>
-    </a>
+    <div class="d-flex align-items-center justify-content-between">
+      <!--Logo de luz que parece un sol en vez de boton "home", así mola mas -->
+      <a class="py-3" [routerLink]="['/home']" title="Inicio" aria-label="Ir a home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </a>
+
+      <!-- Botón hamburguesa solo visible en móvil -->
+      <button class="btn-hamburguesa d-md-none" type="button" (click)="alternarMenuMovil()" title="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <!-- Menú móvil que aparece al clickear hamburguesa -->
+    @if (mostrarMenuMovil()) {
+      <div class="menu-movil">
+        @if (session()) {
+          <a [routerLink]="['/plantes']" routerLinkActive="active-link" (click)="mostrarMenuMovil.set(false)">Plantas</a>
+          <a [routerLink]="['/plantes_table']" routerLinkActive="active-link" (click)="mostrarMenuMovil.set(false)">Tabla</a>
+          <a [routerLink]="['/mapa']" routerLinkActive="active-link" (click)="mostrarMenuMovil.set(false)">Mapa</a>
+        } @else {
+          <a [routerLink]="['/login']" routerLinkActive="active-link" (click)="mostrarMenuMovil.set(false)">Login</a>
+          <a [routerLink]="['/register']" routerLinkActive="active-link" (click)="mostrarMenuMovil.set(false)">Registro</a>
+        }
+      </div>
+    }
 
     @if (session()) {
+      <!-- Menú desktop (visible solo en md+) -->
       <a class="py-3 d-none d-md-inline-block" [routerLink]="['/plantes']" routerLinkActive="active-link">Plantas</a>
       <a class="py-3 d-none d-md-inline-block" [routerLink]="['/plantes_table']" routerLinkActive="active-link">Tabla</a>
       <a class="py-3 d-none d-md-inline-block" [routerLink]="['/mapa']" routerLinkActive="active-link">Mapa</a>
-      
+
 
       <div class="d-flex align-items-center gap-2">
         

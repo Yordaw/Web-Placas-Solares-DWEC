@@ -24,6 +24,7 @@ export class Header {
   */
   mostrarBusqueda = signal(false);
   mostrarMenuPerfil = signal(false);
+  mostrarMenuMovil = signal(false); //para que se vea bien en formato telefono
   mensajeUi = this.busquedaService.obtenerMensajeUi();
 
   cadenaBusqueda = this.busquedaService.obtenerCadenaBusqueda();
@@ -38,6 +39,11 @@ export class Header {
 
   alternarMenuPerfil() {
     this.mostrarMenuPerfil.set(!this.mostrarMenuPerfil());
+  }
+  
+  //para que se vea bien en formato telefono
+  alternarMenuMovil() {
+    this.mostrarMenuMovil.set(!this.mostrarMenuMovil());
   }
 
   constructor(){

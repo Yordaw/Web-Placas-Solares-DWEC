@@ -86,3 +86,64 @@
   background-color: #164a41;
   color: #ffffff;
 }
+
+
+
+/* Menú tipo hamburguesa para la vista en formato telefono */
+.btn-hamburguesa {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.btn-hamburguesa span {
+  width: 24px;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.btn-hamburguesa:hover span {
+  background-color: #f1b24a;
+}
+
+.menu-movil {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.menu-movil a {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95em;
+}
+
+.menu-movil a:last-child {
+  border-bottom: none;
+}
+
+.menu-movil a.active-link {
+  background-color: rgba(241, 178, 74, 0.1);
+}
+
+/* Media queries para responsividad */
+@media (min-width: 768px) {
+  .site-header a {
+    white-space: nowrap;
+  }
+
+  .d-none.d-md-inline-block {
+    display: inline-block !important;
+  }
+}
