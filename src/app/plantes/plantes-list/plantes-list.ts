@@ -2,6 +2,7 @@ import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular
 import { PlantesItem } from '../plantes-item/plantes-item';
 import { Planta } from '../planta';
 import { Supaservice } from '../../services/supaservice';
+import { BusquedaService } from '../../services/busqueda.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { JsonPipe } from '@angular/common';
 import { from, Subscription } from 'rxjs';
@@ -15,7 +16,8 @@ import { from, Subscription } from 'rxjs';
 })
 export class PlantesList implements OnInit,OnDestroy {
   private supaservice: Supaservice = inject(Supaservice);
-  searchString = this.supaservice.getSearchString();
+  private busquedaService: BusquedaService = inject(BusquedaService);
+  cadenaBusqueda = this.busquedaService.obtenerCadenaBusqueda();
 
   //Manera tradicional (SIN SDK)
   //OnInit, OnDestroy, this.plantesSuscription = this.supaservice.getPlantes().subscribe y en el ngOnDestroy():void this.plantesSuscription && this.plantesSuscription.unsuscribe();
@@ -51,7 +53,7 @@ export class PlantesList implements OnInit,OnDestroy {
   */
   plantes= toSignal(from(this.supaservice.getPlantesByCurrentRole()), {initialValue: []});
   filteredPlantes = computed(() => {
-    const term = this.searchString().trim().toLowerCase();
+    const term = this.cadenaBusqueda().trim().toLowerCase();
     if (!term) {
       return this.plantes();
     }

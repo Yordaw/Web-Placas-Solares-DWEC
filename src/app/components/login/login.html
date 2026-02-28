@@ -1,3 +1,6 @@
+<!--Este formulario se hace con Reactive-Forms como se indica en las especificaciones del github:
+*Formulari reactiu per al registre, login i perfil d'usuari*
+-->
 <div id="cuerpo">
 <div class="login-wrapper">
   <div class="login-container">
@@ -11,9 +14,9 @@
         id="inputEmail"
         formControlName="email"
         aria-describedby="emailHelp"
-        [ngClass]="{ 'is-invalid': emailNotValid, 'is-valid': emailValid }"
+        [ngClass]="{ 'is-invalid': emailNoValido, 'is-valid': emailValido }"
       >
-      @if (emailNotValid) {
+      @if (emailNoValido) {
         <div class="invalid-feedback">Email no valido</div>
       }
     </div>
@@ -25,19 +28,19 @@
         class="form-control"
         id="inputPassword"
         formControlName="password"
-        [ngClass]="{ 'is-invalid': passwordNotValid }"
+        [ngClass]="{ 'is-invalid': passwordNoValido }"
       >
-      @if (passwordNotValid) {
+      @if (passwordNoValido) {
         <div class="invalid-feedback">Password no valido</div>
       }
     </div>
 
-    @if (errorMessage) {
-      <div class="alert alert-danger">{{ errorMessage }}</div>
+    @if (mensajeError) {
+      <div class="alert alert-danger">{{ mensajeError }}</div>
     }
 
-    <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || isSubmitting">
-      {{ isSubmitting ? 'Entrando...' : 'Entrar' }}
+    <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || enviando">
+      {{ enviando ? 'Entrando...' : 'Entrar' }}
     </button>
   </form>
   </div>

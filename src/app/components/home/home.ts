@@ -8,5 +8,5 @@ import { RouterModule } from '@angular/router';
   styleUrl: './home.css',
 })
 export class Home {
-
+  //aqui nada
 }

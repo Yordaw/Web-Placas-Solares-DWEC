@@ -1,6 +1,6 @@
 <nav class="site-header sticky-top py-1">
   <div class="container d-flex flex-column flex-md-row justify-content-between">
-    <!-- Logo de luz que parece un sol -->
+    <!--Logo de luz que parece un sol en vez de boton "home", así mola mas -->
     <a class="py-3" [routerLink]="['/home']" title="Inicio" aria-label="Ir a home">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto">
         <circle cx="12" cy="12" r="5"></circle>
@@ -23,32 +23,34 @@
 
       <div class="d-flex align-items-center gap-2">
         
-        <button class="btn btn-outline-light lupa" type="button" (click)="toggleSearch()" title="Buscar">
+        <button class="btn btn-outline-light lupa" type="button" (click)="alternarBusqueda()" title="Buscar">
           <svg class="svg" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="#ffffff" fill-opacity="1" fill-rule="evenodd" stroke="none" d="M20 15c0 2.761-2.239 5-5 5-2.761 0-5-2.239-5-5 0-2.761 2.239-5 5-5 2.761 0 5 2.239 5 5m-1.126 4.581C17.83 20.466 16.477 21 15 21c-3.314 0-6-2.686-6-6 0-3.314 2.686-6 6-6 3.314 0 6 2.686 6 6 0 1.477-.534 2.83-1.419 3.874l4.273 4.272-.708.708z"></path></svg>
         </button>
-        
-        @if (showSearch()) {
+        <!--Este formulario se hace con Plantilla como se indica en las especificaciones del github:
+        Formulari de plantilla per al buscador reactiu de plantes solars
+        -->
+        @if (mostrarBusqueda()) {
           <input class="form-control campobuscar" type="search" placeholder="Buscar..." aria-label="Search"
-          [(ngModel)]="searchString"
+          [ngModel]="cadenaBusqueda()"
           [ngModelOptions]="{standalone: true}"
-          (ngModelChange)="search($event)">
+          (ngModelChange)="buscar($event)">
         }
       
         <div class="dropdown">
-          <button class="btn btn-outline-light" type="button" (click)="toggleProfileMenu()" title="Perfil">
+          <button class="btn btn-outline-light" type="button" (click)="alternarMenuPerfil()" title="Perfil">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#f1b24a" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </button>
-          
-          @if (showProfileMenu()) {
+
+          @if (mostrarMenuPerfil()) {
             <div class="dropdown-menu show">
-              <a class="dropdown-item" [routerLink]="['/profile']" (click)="showProfileMenu.set(false)">Ver Perfil</a>
-              <a class="dropdown-item" (click)="logout(); showProfileMenu.set(false)">Cerrar Sesión</a>
+              <a class="dropdown-item" [routerLink]="['/profile']" (click)="mostrarMenuPerfil.set(false)">Ver Perfil</a>
+              <a class="dropdown-item" (click)="logout(); mostrarMenuPerfil.set(false)">Cerrar Sesión</a>
             </div>
           }
-          
+
         </div>
 
       </div>

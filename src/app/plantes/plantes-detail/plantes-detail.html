@@ -1,12 +1,12 @@
 @if (planta(); as p) {
   <div class="container mt-5">
     <div class="row">
-      <!-- Imagen grande -->
+      <!-- esto es la imagen grande -->
       <div class="col-lg-6 mb-4">
         <img [src]="p.foto" alt="{{p.nom}}" class="img-fluid rounded shadow">
       </div>
 
-      <!-- Información de la planta -->
+      <!--la info de la palnta -->
       <div class="col-lg-6">
         <h1 class="mb-3">{{p.nom}}</h1>
 
@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <!-- Registros -->
+    <!-- la parte de registro "en vivo" que falseamos con el archivo de Castillo -->
     <div class="row mt-4">
       <div class="col-12">
         <div class="card">

@@ -1,12 +1,21 @@
+<!--Este formulario se hace con Reactive-Forms como se indica en las especificaciones del github:
+*Formulari reactiu per al registre, login i perfil d'usuari*
+-->
 <div class="profile-wrapper">
   <div class="profile-container">
-    <h3>Perfil</h3>
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <h3 class="mb-0">Perfil</h3>
+      @if (rolUsuario()) {
+        <span class="badge" [ngClass]="{'bg-success': rolUsuario() === 'admin', 'bg-primary': rolUsuario() !== 'admin'}">
+          {{ rolUsuario() === 'admin' ? 'Administrador' : 'Cliente' }}
+        </span>
+      }
+    </div>
 
-    @if (isLoading) {
+    @if (cargando()) {
       <div class="alert alert-info">Cargando perfil...</div>
-    }
-
-    <form [formGroup]="formulario" (ngSubmit)="saveProfile()">
+    } @else {
+    <form [formGroup]="formulario" (ngSubmit)="guardarPerfil()">
 		<div class="form-group mb-3">
 			<label for="inputUsername">Username</label>
 			<input
@@ -14,9 +23,9 @@
 				class="form-control"
 				id="inputUsername"
 				formControlName="username"
-				[ngClass]="{ 'is-invalid': usernameNotValid }"
+				[ngClass]="{ 'is-invalid': usernameNoValido }"
 			>
-			@if (usernameNotValid) {
+			@if (usernameNoValido) {
 				<div class="invalid-feedback">Minimo 3 caracteres</div>
 			}
 		</div>
@@ -34,12 +43,12 @@
 		<div class="form-group mb-3">
 			<label class="form-label">Avatar</label>
 			<div class="avatar-grid">
-				@for (avatar of availableAvatars; track avatar) {
+				@for (avatar of avatarsDisponibles; track avatar) {
 					<button
 						type="button"
 						class="avatar-option"
-						[ngClass]="{ 'selected': isAvatarSelected(avatar) }"
-						(click)="selectAvatar(avatar)"
+						[ngClass]="{ 'selected': avatarSeleccionado(avatar) }"
+						(click)="seleccionarAvatar(avatar)"
 					>
 						<img [src]="avatar" alt="Avatar disponible" class="avatar-thumb">
 					</button>
@@ -55,7 +64,7 @@
 		</div>
 
 		<div class="form-group mb-3">
-			<label for="inputWebsite">Website</label>
+			<label for="inputWebsite">Web</label>
 			<input
 				type="text"
 				class="form-control"
@@ -64,17 +73,18 @@
 			>
 		</div>
 
-		@if (errorMessage) {
-			<div class="alert alert-danger">{{ errorMessage }}</div>
+		@if (mensajeError()) {
+			<div class="alert alert-danger">{{ mensajeError() }}</div>
 		}
 
-		@if (successMessage) {
-			<div class="alert alert-success">{{ successMessage }}</div>
+		@if (mensajeExito()) {
+			<div class="alert alert-success">{{ mensajeExito() }}</div>
 		}
 
-		<button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || isSubmitting">
-			{{ isSubmitting ? 'Guardando...' : 'Guardar perfil' }}
+		<button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || enviando()">
+			{{ enviando() ? 'Guardando...' : 'Guardar perfil' }}
 		</button>
 	</form>
+    }
   </div>
 </div>

@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, effect, inject, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { Supaservice } from '../../services/supaservice';
+import { BusquedaService } from '../../services/busqueda.service';
 
 @Component({
   selector: 'app-plantes-map',
@@ -10,9 +11,10 @@ import { Supaservice } from '../../services/supaservice';
 })
 export class PlantesMap implements OnInit, AfterViewInit {
   private supaservice: Supaservice = inject(Supaservice);
+  private busquedaService: BusquedaService = inject(BusquedaService);
 
   plantes = this.supaservice.plantesSignal;
-  searchString = this.supaservice.getSearchString();
+  cadenaBusqueda = this.busquedaService.obtenerCadenaBusqueda();
 
   private map!: L.Map;
   private myIcon!: L.Icon;
@@ -21,7 +23,7 @@ export class PlantesMap implements OnInit, AfterViewInit {
 
   constructor() {
     effect(() => {
-      const term = this.searchString().trim().toLowerCase();
+      const term = this.cadenaBusqueda().trim().toLowerCase();
       const plantes = this.plantes().filter((planta: any) => {
         if (!term) {
           return true;

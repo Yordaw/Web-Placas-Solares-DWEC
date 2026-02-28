@@ -1,29 +1,33 @@
+<!--Este formulario se hace con Signal-Forms como se indica en las especificaciones del github:
+Signal Form per a donar d'alta i editar plantes solars.
+-->
+
 <div class="container  mt-4">
   <div class="card">
     <div class="card-header d-flex align-items-center">
       <h5 class="mb-0">Lista de Plantas Solares</h5>
-      @if (isAdmin()) {
-        <button class="btn btn-primary btn-sm ms-auto" type="button" (click)="openCreateForm()">Nueva Planta</button>
+      @if (esAdmin()) {
+        <button class="btn btn-primary btn-sm ms-auto" type="button" (click)="abrirFormCrear()">Nueva Planta</button>
       }
     </div>
     <div class="card-body">
-      @if (errorMessage()) {
-        <div class="alert alert-danger">{{ errorMessage() }}</div>
+      @if (mensajeError()) {
+        <div class="alert alert-danger">{{ mensajeError() }}</div>
       }
 
-      @if (successMessage()) {
-        <div class="alert alert-success">{{ successMessage() }}</div>
+      @if (mensajeExito()) {
+        <div class="alert alert-success">{{ mensajeExito() }}</div>
       }
 
       <div class="table-responsive">
         <table class="table table-striped table-hover">
           <thead class="table-dark">
             <tr>
-              <th scope="col">Nom</th>
-              <th scope="col">Ubicacio</th>
-              <th scope="col">Usuari</th>
-              <th scope="col">Capacitat</th>
-              @if (isAdmin()) {
+              <th scope="col">Nombre</th>
+              <th scope="col">Ubicacion</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Capacidad</th>
+              @if (esAdmin()) {
                 <th scope="col">Acción</th>
               }
             </tr>
@@ -33,13 +37,13 @@
             @for(planta of filteredPlantes(); track planta.id){
               <tr>
                 <td>{{ planta.nom }}</td>
-                <td>{{ getCoordText(planta) }}</td>
+                <td>{{ obtenerTextoCoordenadas(planta) }}</td>
                 <td>{{ planta.user }}</td>
                 <td>{{ planta.capacitat }}</td>
-                @if (isAdmin()) {
+                @if (esAdmin()) {
                   <td>
-                    <button class="btn btn-sm btn-warning me-2" type="button" (click)="openEditForm(planta)">Editar</button>
-                    <button class="btn btn-sm btn-danger" type="button" (click)="deletePlanta(planta)">Borrar</button>
+                    <button class="btn btn-sm btn-warning me-2" type="button" (click)="abrirFormEditar(planta)">Editar</button>
+                    <button class="btn btn-sm btn-danger" type="button" (click)="borrarPlanta(planta)">Borrar</button>
                   </td>
                 }
               </tr>
@@ -49,10 +53,10 @@
         </table>
       </div>
 
-      @if (isAdmin() && showForm()) {
+      @if (esAdmin() && mostrarFormulario()) {
         <div class="card mt-4">
           <div class="card-header">
-            <h6 class="mb-0">{{ isEditing() ? 'Editar Planta' : 'Nueva Planta' }}</h6>
+            <h6 class="mb-0">{{ editando() ? 'Editar Planta' : 'Nueva Planta' }}</h6>
           </div>
           <div class="card-body">
             <div class="row g-3">
@@ -62,20 +66,32 @@
                   id="nom"
                   class="form-control"
                   type="text"
-                  [value]="formNom()"
-                  (input)="formNom.set($any($event.target).value)"
+                  [formField]="formularioPlanta.nom"
                 >
+                @if (formularioPlanta.nom().touched() && formularioPlanta.nom().invalid()) {
+                  <div class="invalid-feedback d-block">
+                    @for (error of formularioPlanta.nom().errors(); track $index) {
+                      {{ error.message }}
+                    }
+                  </div>
+                }
               </div>
 
               <div class="col-md-6">
-                <label class="form-label" for="capacitat">Capacidad (MW)</label>
+                <label class="form-label" for="capacitat">Capacidad</label>
                 <input
                   id="capacitat"
                   class="form-control"
                   type="number"
-                  [value]="formCapacitat()"
-                  (input)="formCapacitat.set($any($event.target).value)"
+                  [formField]="formularioPlanta.capacitat"
                 >
+                @if (formularioPlanta.capacitat().touched() && formularioPlanta.capacitat().invalid()) {
+                  <div class="invalid-feedback d-block">
+                    @for (error of formularioPlanta.capacitat().errors(); track $index) {
+                      {{ error.message }}
+                    }
+                  </div>
+                }
               </div>
 
               <div class="col-md-6">
@@ -84,9 +100,15 @@
                   id="lat"
                   class="form-control"
                   type="number"
-                  [value]="formLatitude()"
-                  (input)="formLatitude.set($any($event.target).value)"
+                  [formField]="formularioPlanta.latitude"
                 >
+                @if (formularioPlanta.latitude().touched() && formularioPlanta.latitude().invalid()) {
+                  <div class="invalid-feedback d-block">
+                    @for (error of formularioPlanta.latitude().errors(); track $index) {
+                      {{ error.message }}
+                    }
+                  </div>
+                }
               </div>
 
               <div class="col-md-6">
@@ -95,13 +117,19 @@
                   id="lon"
                   class="form-control"
                   type="number"
-                  [value]="formLongitude()"
-                  (input)="formLongitude.set($any($event.target).value)"
+                  [formField]="formularioPlanta.longitude"
                 >
+                @if (formularioPlanta.longitude().touched() && formularioPlanta.longitude().invalid()) {
+                  <div class="invalid-feedback d-block">
+                    @for (error of formularioPlanta.longitude().errors(); track $index) {
+                      {{ error.message }}
+                    }
+                  </div>
+                }
               </div>
 
               <div class="col-12">
-                <button class="btn btn-outline-primary" type="button" [disabled]="isSubmitting()" (click)="useCurrentLocation()">
+                <button class="btn btn-outline-primary" type="button" [disabled]="enviando()" (click)="usarUbicacionActual()">
                   Usar ubicación actual
                 </button>
               </div>
@@ -113,21 +141,21 @@
                   class="form-control"
                   type="file"
                   accept="image/*"
-                  (change)="onImageSelected($event)"
+                  (change)="alSeleccionarImagen($event)"
                 >
               </div>
 
-              @if (imagePreview()) {
+              @if (previstaImagen()) {
                 <div class="col-12">
-                  <img [src]="imagePreview()" alt="Preview" class="img-thumbnail image-preview">
+                  <img [src]="previstaImagen()" alt="Preview" class="img-thumbnail image-preview">
                 </div>
               }
 
               <div class="col-12 d-flex gap-2">
-                <button class="btn btn-success" type="button" [disabled]="isSubmitting()" (click)="submitForm()">
-                  {{ isEditing() ? 'Guardar Cambios' : 'Crear' }}
+                <button class="btn btn-success" type="button" [disabled]="enviando() || formularioPlanta().invalid()" (click)="enviarFormulario()">
+                  {{ editando() ? 'Guardar Cambios' : 'Crear' }}
                 </button>
-                <button class="btn btn-secondary" type="button" [disabled]="isSubmitting()" (click)="cancelForm()">Cancelar</button>
+                <button class="btn btn-secondary" type="button" [disabled]="enviando()" (click)="cancelarFormulario()">Cancelar</button>
               </div>
             </div>
           </div>

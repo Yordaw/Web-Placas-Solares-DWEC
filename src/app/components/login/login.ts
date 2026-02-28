@@ -11,12 +11,17 @@ import { Supaservice } from '../../services/supaservice';
   styleUrl: './login.css',
 })
 export class Login {
+  /*
+  Este formulario se hace con Reactive-Forms como se indica en las especificaciones del github:
+  *Formulari reactiu per al registre, login i perfil d'usuari*
+  */
   formulario: FormGroup;
   formBuilder: FormBuilder = inject(FormBuilder);
   supaservice: Supaservice = inject(Supaservice);
   router: Router = inject(Router);
-  errorMessage = '';
-  isSubmitting = false;
+  mensajeError = '';
+  enviando = false;
+  
   constructor(){
     this.formulario = this.formBuilder.group({
       email: ['', [Validators.email, Validators.required]],
@@ -27,25 +32,25 @@ export class Login {
   async login() {
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
-      this.errorMessage = 'Formulario no valido';
+      this.mensajeError = 'Formulario no valido';
       return;
     }
 
-    this.isSubmitting = true;
-    this.errorMessage = '';
+    this.enviando = true;
+    this.mensajeError = '';
     const loginData = this.formulario.value as { email: string; password: string };
 
     try {
       await this.supaservice.login(loginData);
       await this.router.navigate(['/plantes']);
     } catch (error: any) {
-      this.errorMessage = this.getLoginErrorMessage(error);
+      this.mensajeError = this.obtenerMensajeError(error);
     } finally {
-      this.isSubmitting = false;
+      this.enviando = false;
     }
   }
 
-  private getLoginErrorMessage(error: any): string {
+  private obtenerMensajeError(error: any): string {
     const rawMessage = (error?.message ?? '').toString().toLowerCase();
 
     if (rawMessage.includes('invalid login credentials')) {
@@ -63,17 +68,17 @@ export class Login {
     return error?.message ?? 'No se pudo iniciar sesion';
   }
 
-  get emailNotValid(){
+  get emailNoValido(){
     return this.formulario.get('email')!.invalid &&
             this.formulario.get('email')!.touched;
   }
 
-  get emailValid(){
+  get emailValido(){
     return this.formulario.get('email')!.valid &&
             this.formulario.get('email')!.touched;
   }
 
-  get passwordNotValid() {
+  get passwordNoValido() {
     return this.formulario.get('password')!.invalid &&
             this.formulario.get('password')!.touched;
   }

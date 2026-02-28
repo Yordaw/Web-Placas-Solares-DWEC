@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Session } from '@supabase/supabase-js';
 import { Supaservice } from '../../services/supaservice';
+import { BusquedaService } from '../../services/busqueda.service';
 
 @Component({
   selector: 'app-header',
@@ -14,24 +15,29 @@ import { Supaservice } from '../../services/supaservice';
 export class Header {
   router: Router = inject(Router);
   private supaservice: Supaservice = inject(Supaservice);
+  private busquedaService: BusquedaService = inject(BusquedaService);
   session = signal<Session | null>(null);
-  showSearch = signal(false);
-  showProfileMenu = signal(false);
-  uiMessage = this.supaservice.getUiMessage();
 
-  searchString = this.supaservice.getSearchString()();
+  /*
+  Este formulario se hace con Plantilla como se indica en las especificaciones del github:
+  Formulari de plantilla per al buscador reactiu de plantes solars
+  */
+  mostrarBusqueda = signal(false);
+  mostrarMenuPerfil = signal(false);
+  mensajeUi = this.busquedaService.obtenerMensajeUi();
 
-  search($event: string){
-    this.searchString = $event;
-    this.supaservice.setSearchString($event);
+  cadenaBusqueda = this.busquedaService.obtenerCadenaBusqueda();
+
+  buscar($event: string){
+    this.busquedaService.establecerCadenaBusqueda($event);
   }
 
-  toggleSearch() {
-    this.showSearch.set(!this.showSearch());
+  alternarBusqueda() {
+    this.mostrarBusqueda.set(!this.mostrarBusqueda());
   }
 
-  toggleProfileMenu() {
-    this.showProfileMenu.set(!this.showProfileMenu());
+  alternarMenuPerfil() {
+    this.mostrarMenuPerfil.set(!this.mostrarMenuPerfil());
   }
 
   constructor(){
@@ -43,21 +49,21 @@ export class Header {
       });
 
     effect((onCleanup) => {
-      const message = this.uiMessage();
+      const message = this.mensajeUi();
       if (!message) {
         return;
       }
 
       const timeoutId = setTimeout(() => {
-        this.supaservice.clearUiMessage();
+        this.busquedaService.limpiarMensajeUi();
       }, 5000);
 
       onCleanup(() => clearTimeout(timeoutId));
     });
   }
 
-  clearMessage() {
-    this.supaservice.clearUiMessage();
+  limpiarMensaje() {
+    this.busquedaService.limpiarMensajeUi();
   }
 
   async logout(){

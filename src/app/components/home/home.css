@@ -2,9 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 125px);
-  /*background: url('/fondo.png') center 10% / cover no-repeat fixed;*/
-  /*background-color: #26e2aa;*/
-  background: #164A41;
+
   background: linear-gradient(90deg, rgba(22, 74, 65, 1) 0%, rgba(77, 119, 78, 1) 19%, rgba(157, 200, 141, 1) 100%);
 }
 
@@ -96,6 +94,7 @@
   animation: slideInRight 0.9s ease-out both, floatPanel 5.5s ease-in-out 1s infinite;
 }
 
+/* Las animaciones de Nacho.. */
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -160,15 +159,5 @@
   25% {
     transform: translateX(220%) rotate(15deg);
     opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-main-title,
-  .hero-subtitle,
-  .hero-cta,
-  .hero-right img,
-  .hero-right::before {
-    animation: none !important;
   }
 }

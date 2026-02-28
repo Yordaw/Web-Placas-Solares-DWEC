@@ -1,20 +1,28 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, OnInit, signal } from '@angular/core';
+import { form, required, min, FormField, submit } from '@angular/forms/signals';
 import { Supaservice } from '../../services/supaservice';
+import { BusquedaService } from '../../services/busqueda.service';
 import { Planta } from '../planta';
 
 @Component({
   selector: 'app-plantes-table',
-  imports: [],
+  imports: [FormField],
   templateUrl: './plantes-table.html',
   styleUrl: './plantes-table.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlantesTable implements OnInit {
+  /*
+  Este formulario se hace con Signal-Forms como se indica en las especificaciones del github:
+  Signal Form per a donar d'alta i editar plantes solars.
+  */
   private supaservice: Supaservice = inject(Supaservice);
-  searchString = this.supaservice.getSearchString();
+  private busquedaService: BusquedaService = inject(BusquedaService);
+  cadenaBusqueda = this.busquedaService.obtenerCadenaBusqueda();
 
   plantes = signal<Planta[]>([]);
   filteredPlantes = computed(() => {
-    const term = this.searchString().trim().toLowerCase();
+    const term = this.cadenaBusqueda().trim().toLowerCase();
     if (!term) {
       return this.plantes();
     }
@@ -26,207 +34,218 @@ export class PlantesTable implements OnInit {
       return haystack.includes(term);
     });
   });
-  isAdmin = signal(false);
+  esAdmin = signal(false);
+  mostrarFormulario = signal(false);
+  editando = signal(false);
+  idEditando = signal<number | null>(null);
+  enviando = signal(false);
+  mensajeError = signal('');
+  mensajeExito = signal('');
 
-  showForm = signal(false);
-  isEditing = signal(false);
-  editingId = signal<number | null>(null);
+  modeloPlanta = signal({
+    nom: '',
+    capacitat: 0,
+    latitude: 0,
+    longitude: 0,
+  });
 
-  isSubmitting = signal(false);
-  errorMessage = signal('');
-  successMessage = signal('');
+  formularioPlanta = form(this.modeloPlanta, (esquema) => {
+    required(esquema.nom, { message: 'El nombre es obligatorio' });
+    required(esquema.capacitat, { message: 'La capacidad es obligatoria' });
+    min(esquema.capacitat, 0, { message: 'La capacidad mínima es 0' });
+    required(esquema.latitude, { message: 'La latitud es obligatoria' });
+    required(esquema.longitude, { message: 'La longitud es obligatoria' });
+  });
 
-  formNom = signal('');
-  formCapacitat = signal('');
-  formLatitude = signal('');
-  formLongitude = signal('');
-  imageFile = signal<File | null>(null);
-  imagePreview = signal('');
+  archivoImagen = signal<File | null>(null);
+  previstaImagen = signal('');
 
   async ngOnInit(): Promise<void> {
-    await this.loadRoleAndPlantes();
+    await this.cargarRolYPlantas();
   }
 
-  private async loadRoleAndPlantes() {
-    this.errorMessage.set('');
+  private async cargarRolYPlantas() {
+    this.mensajeError.set('');
     try {
       const user = await this.supaservice.getCurrentUser();
       if (!user) {
         this.plantes.set([]);
-        this.isAdmin.set(false);
+        this.esAdmin.set(false);
         return;
       }
 
       const profile = await this.supaservice.getProfilePlacas(user.id);
-      this.isAdmin.set(profile?.role === 'admin');
+      this.esAdmin.set(profile?.role === 'admin');
 
       const data = await this.supaservice.getPlantesByCurrentRole();
       this.plantes.set((data ?? []) as Planta[]);
     } catch (error: any) {
-      this.errorMessage.set(error?.message ?? 'No se pudieron cargar las plantas');
+      this.mensajeError.set(error?.message ?? 'No se pudieron cargar las plantas');
       this.plantes.set([]);
     }
   }
 
-  openCreateForm() {
-    if (!this.isAdmin()) {
+  abrirFormCrear() {
+    if (!this.esAdmin()) {
       return;
     }
-    this.showForm.set(true);
-    this.isEditing.set(false);
-    this.editingId.set(null);
-    this.formNom.set('');
-    this.formCapacitat.set('');
-    this.formLatitude.set('');
-    this.formLongitude.set('');
-    this.imageFile.set(null);
-    this.imagePreview.set('');
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    this.mostrarFormulario.set(true);
+    this.editando.set(false);
+    this.idEditando.set(null);
+    this.modeloPlanta.set({ nom: '', capacitat: 0, latitude: 0, longitude: 0 });
+    this.formularioPlanta().reset();
+    this.archivoImagen.set(null);
+    this.previstaImagen.set('');
+    this.mensajeError.set('');
+    this.mensajeExito.set('');
   }
 
-  openEditForm(planta: Planta) {
-    if (!this.isAdmin()) {
+  abrirFormEditar(planta: Planta) {
+    if (!this.esAdmin()) {
       return;
     }
 
     const ubicacio: any = planta.ubicacio as any;
-    const latitude = ubicacio?.latitude ?? ubicacio?.coordenadas?.lat ?? '';
-    const longitude = ubicacio?.longitude ?? ubicacio?.coordenadas?.lon ?? '';
+    const latitude = Number(ubicacio?.latitude ?? ubicacio?.coordenadas?.lat ?? 0);
+    const longitude = Number(ubicacio?.longitude ?? ubicacio?.coordenadas?.lon ?? 0);
 
-    this.showForm.set(true);
-    this.isEditing.set(true);
-    this.editingId.set(planta.id);
-    this.formNom.set(planta.nom ?? '');
-    this.formCapacitat.set(String(planta.capacitat ?? ''));
-    this.formLatitude.set(String(latitude));
-    this.formLongitude.set(String(longitude));
-    this.imageFile.set(null);
-    this.imagePreview.set((planta.foto as string) ?? '');
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    this.mostrarFormulario.set(true);
+    this.editando.set(true);
+    this.idEditando.set(planta.id);
+    this.modeloPlanta.set({
+      nom: planta.nom ?? '',
+      capacitat: Number(planta.capacitat ?? 0),
+      latitude,
+      longitude,
+    });
+    this.formularioPlanta().reset();
+    this.archivoImagen.set(null);
+    this.previstaImagen.set((planta.foto as string) ?? '');
+    this.mensajeError.set('');
+    this.mensajeExito.set('');
   }
 
-  cancelForm(clearMessages = true) {
-    this.showForm.set(false);
-    this.isEditing.set(false);
-    this.editingId.set(null);
+  cancelarFormulario(clearMessages = true) {
+    this.mostrarFormulario.set(false);
+    this.editando.set(false);
+    this.idEditando.set(null);
     if (clearMessages) {
-      this.errorMessage.set('');
-      this.successMessage.set('');
+      this.mensajeError.set('');
+      this.mensajeExito.set('');
     }
   }
 
-  async submitForm() {
-    if (!this.isAdmin()) {
+  async enviarFormulario() {
+    if (!this.esAdmin()) {
       return;
     }
 
-    const nom = this.formNom().trim();
-    const capacitat = Number(this.formCapacitat());
-    const latitude = Number(this.formLatitude());
-    const longitude = Number(this.formLongitude());
+    if (this.formularioPlanta().invalid()) {
+      this.mensajeError.set('Completa todos los campos obligatorios con valores válidos');
+      this.mensajeExito.set('');
+      return;
+    }
+
+    const modelo = this.modeloPlanta();
     const user = await this.supaservice.getCurrentUser();
 
     if (!user) {
-      this.errorMessage.set('No hay sesion activa');
-      this.successMessage.set('');
+      this.mensajeError.set('No hay sesion activa');
+      this.mensajeExito.set('');
       return;
     }
 
-    if (!nom || Number.isNaN(capacitat) || Number.isNaN(latitude) || Number.isNaN(longitude)) {
-      this.errorMessage.set('Completa todos los campos obligatorios con valores válidos');
-      this.successMessage.set('');
-      return;
-    }
-
-    this.isSubmitting.set(true);
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    this.enviando.set(true);
+    this.mensajeError.set('');
+    this.mensajeExito.set('');
 
     try {
-      let fotoFinal = this.imagePreview().trim() || null;
-      if (this.imageFile()) {
-        const upload = await this.supaservice.uploadPlantaImage(this.imageFile()!, user.id);
+      let fotoFinal = this.previstaImagen().trim() || null;
+      if (this.archivoImagen()) {
+        const upload = await this.supaservice.uploadPlantaImage(this.archivoImagen()!, user.id);
         fotoFinal = upload.publicUrl;
       }
 
-      if (this.isEditing() && this.editingId() != null) {
-        await this.supaservice.updatePlanta(this.editingId()!, {
-          nom,
-          capacitat,
-          latitude,
-          longitude,
+      if (this.editando() && this.idEditando() != null) {
+        await this.supaservice.updatePlanta(this.idEditando()!, {
+          nom: modelo.nom,
+          capacitat: modelo.capacitat,
+          latitude: modelo.latitude,
+          longitude: modelo.longitude,
           foto: fotoFinal,
         });
-        this.successMessage.set('Planta actualizada correctamente');
+        this.mensajeExito.set('Planta actualizada correctamente');
       } else {
         await this.supaservice.createPlanta({
-          nom,
-          capacitat,
-          latitude,
-          longitude,
+          nom: modelo.nom,
+          capacitat: modelo.capacitat,
+          latitude: modelo.latitude,
+          longitude: modelo.longitude,
           foto: fotoFinal,
         });
-        this.successMessage.set('Planta creada correctamente');
+        this.mensajeExito.set('Planta creada correctamente');
       }
 
       const data = await this.supaservice.getPlantesByCurrentRole();
       this.plantes.set((data ?? []) as Planta[]);
-      this.cancelForm(false);
+      this.cancelarFormulario(false);
     } catch (error: any) {
-      this.errorMessage.set(error?.message ?? 'No se pudo guardar la planta');
+      this.mensajeError.set(error?.message ?? 'No se pudo guardar la planta');
     } finally {
-      this.isSubmitting.set(false);
+      this.enviando.set(false);
     }
   }
 
-  async onImageSelected(event: Event) {
+  async alSeleccionarImagen(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
-    this.errorMessage.set('');
+    this.mensajeError.set('');
 
     if (!file) {
-      this.imageFile.set(null);
+      this.archivoImagen.set(null);
       return;
     }
 
     if (!file.type.startsWith('image/')) {
-      this.errorMessage.set('El archivo debe ser una imagen válida');
-      this.imageFile.set(null);
+      this.mensajeError.set('El archivo debe ser una imagen válida');
+      this.archivoImagen.set(null);
       return;
     }
 
-    this.imageFile.set(file);
+    this.archivoImagen.set(file);
     try {
       const preview = await this.supaservice.readFileAsUrl(file);
-      this.imagePreview.set(preview);
+      this.previstaImagen.set(preview);
     } catch {
-      this.errorMessage.set('No se pudo previsualizar la imagen');
+      this.mensajeError.set('No se pudo previsualizar la imagen');
     }
   }
 
-  useCurrentLocation() {
-    if (!this.isAdmin()) {
+  usarUbicacionActual() {
+    if (!this.esAdmin()) {
       return;
     }
 
     if (!navigator.geolocation) {
-      this.errorMessage.set('Tu navegador no soporta geolocalización');
-      this.successMessage.set('');
+      this.mensajeError.set('Tu navegador no soporta geolocalización');
+      this.mensajeExito.set('');
       return;
     }
 
-    this.errorMessage.set('');
+    this.mensajeError.set('');
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        this.formLatitude.set(String(position.coords.latitude));
-        this.formLongitude.set(String(position.coords.longitude));
-        this.successMessage.set('Ubicación actual cargada');
+        const modelo = this.modeloPlanta();
+        this.modeloPlanta.set({
+          ...modelo,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        this.mensajeExito.set('Ubicación actual cargada');
       },
       () => {
-        this.errorMessage.set('No se pudo obtener la ubicación actual');
-        this.successMessage.set('');
+        this.mensajeError.set('No se pudo obtener la ubicación actual');
+        this.mensajeExito.set('');
       },
       {
         enableHighAccuracy: true,
@@ -235,8 +254,8 @@ export class PlantesTable implements OnInit {
     );
   }
 
-  async deletePlanta(planta: Planta) {
-    if (!this.isAdmin()) {
+  async borrarPlanta(planta: Planta) {
+    if (!this.esAdmin()) {
       return;
     }
 
@@ -245,19 +264,19 @@ export class PlantesTable implements OnInit {
       return;
     }
 
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    this.mensajeError.set('');
+    this.mensajeExito.set('');
     try {
       await this.supaservice.deletePlanta(planta.id);
-      this.successMessage.set('Planta borrada correctamente');
+      this.mensajeExito.set('Planta borrada correctamente');
       const data = await this.supaservice.getPlantesByCurrentRole();
       this.plantes.set((data ?? []) as Planta[]);
     } catch (error: any) {
-      this.errorMessage.set(error?.message ?? 'No se pudo borrar la planta');
+      this.mensajeError.set(error?.message ?? 'No se pudo borrar la planta');
     }
   }
 
-  getCoordText(planta: Planta): string {
+  obtenerTextoCoordenadas(planta: Planta): string {
     const ubicacio: any = planta.ubicacio as any;
     const lat = ubicacio?.latitude ?? ubicacio?.coordenadas?.lat ?? '-';
     const lon = ubicacio?.longitude ?? ubicacio?.coordenadas?.lon ?? '-';

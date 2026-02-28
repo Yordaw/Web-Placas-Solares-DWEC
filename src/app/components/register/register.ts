@@ -11,13 +11,17 @@ import { Router } from '@angular/router';
   styleUrl: './register.css',
 })
 export class Register {
+  /*
+  Este formulario se hace con Reactive-Forms como se indica en las especificaciones del github:
+  *Formulari reactiu per al registre, login i perfil d'usuari*
+  */
   formBuilder: FormBuilder = inject(FormBuilder);
   supaservice: Supaservice = inject(Supaservice);
   router: Router = inject(Router);
   formulario: FormGroup;
-  errorMessage = '';
-  successMessage = '';
-  isSubmitting = false;
+  mensajeError = '';
+  mensajeExito = '';
+  enviando = false;
 
   constructor(){
     this.formulario = this.formBuilder.group(
@@ -26,11 +30,11 @@ export class Register {
         password: ['', [Validators.required, Validators.minLength(8)]],
         password2: ['', [Validators.required, Validators.minLength(8)]]
       },
-      { validators: this.passwordMatchValidator }
+      { validators: this.validadorPasswordIguales }
     );
   }
 
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  validadorPasswordIguales(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password');
     const password2 = control.get('password2');
     if (password && password2 && password.value !== password2.value) {
@@ -42,31 +46,31 @@ export class Register {
   async register() {
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
-      this.errorMessage = 'Formulario no valido';
-      this.successMessage = '';
+      this.mensajeError = 'Formulario no valido';
+      this.mensajeExito = '';
       return;
     }
 
-    this.isSubmitting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.enviando = true;
+    this.mensajeError = '';
+    this.mensajeExito = '';
     const { email, password } = this.formulario.value as { email: string; password: string };
 
     try {
       await this.supaservice.register({ email, password });
-      this.successMessage = 'Registro completado correctamente. Ya puedes iniciar sesion';
+      this.mensajeExito = 'Registro completado correctamente. Ya puedes iniciar sesion';
       this.formulario.reset();
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 1200);
     } catch (error: any) {
-      this.errorMessage = this.getRegisterErrorMessage(error);
+      this.mensajeError = this.obtenerMensajeError(error);
     } finally {
-      this.isSubmitting = false;
+      this.enviando = false;
     }
   }
 
-  private getRegisterErrorMessage(error: any): string {
+  private obtenerMensajeError(error: any): string {
     const rawMessage = (error?.message ?? '').toString().toLowerCase();
 
     if (rawMessage.includes('user already registered')) {
@@ -84,29 +88,29 @@ export class Register {
     return error?.message ?? 'No se pudo completar el registro';
   }
 
-  get emailNotValid() {
+  get emailNoValido() {
     return this.formulario.controls['email'].invalid && this.formulario.controls['email'].touched;
   }
 
-  get emailValid() {
+  get emailValido() {
     return this.formulario.controls['email'].valid && this.formulario.controls['email'].touched;
   }
 
-  passwortdNotValid(name: string){
+  passwordNoValido(name: string){
     return (
       (this.formulario.controls[name].invalid || this.formulario.hasError('passwordValidator')) &&
       this.formulario.controls[name].touched
     );
   }
 
-  passwordValid(name: string){
+  passwordValido(name: string){
     return (
       (this.formulario.get(name)!.valid && !this.formulario.hasError('passwordValidator')) &&
       this.formulario.get(name)!.touched
     );
   }
 
-  get passwordCrossValidation() {
+  get validacionCruzadaPassword() {
     return (
       this.formulario.hasError('passwordValidator') &&
       this.formulario.get('password')?.touched &&

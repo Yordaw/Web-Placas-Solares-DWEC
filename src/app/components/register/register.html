@@ -1,3 +1,6 @@
+<!--Este formulario se hace con Reactive-Forms como se indica en las especificaciones del github:
+*Formulari reactiu per al registre, login i perfil d'usuari*
+-->
 <div id="cuerpo">
   <div class="register-wrapper">
     <div class="register-container">
@@ -6,35 +9,62 @@
       <div class="form-group mb-3">
         <label for="inputEmail">Email</label>
         <input type="email" class="form-control" id="inputEmail" formControlName="email"
-          [ngClass]="{'is-invalid': emailNotValid, 'is-valid': emailValid}">
+          [ngClass]="{'is-invalid': emailNoValido, 'is-valid': emailValido}">
+        @if (emailNoValido) {
+          <div class="invalid-feedback d-block">
+            @if (formulario.get('email')?.errors?.['required']) {
+              Email requerido
+            } @else if (formulario.get('email')?.errors?.['email']) {
+              Email no valido
+            }
+          </div>
+        }
       </div>
 
       <div class="form-group mb-3">
         <label for="inputPassword">Password</label>
         <input type="password" class="form-control" id="inputPassword" formControlName="password"
-          [ngClass]="{'is-invalid': passwortdNotValid('password'), 'is-valid': passwordValid('password')}">
+          [ngClass]="{'is-invalid': passwordNoValido('password'), 'is-valid': passwordValido('password')}">
+        @if (passwordNoValido('password')) {
+          <div class="invalid-feedback d-block">
+            @if (formulario.get('password')?.errors?.['required']) {
+              Password requerido
+            } @else if (formulario.get('password')?.errors?.['minlength']) {
+              Password minimo 8 caracteres
+            }
+          </div>
+        }
       </div>
 
       <div class="form-group mb-3">
         <label for="inputPassword2">Confirmar Password</label>
         <input type="password" class="form-control" id="inputPassword2" formControlName="password2"
-          [ngClass]="{'is-invalid': passwortdNotValid('password2'), 'is-valid': passwordValid('password2')}">
+          [ngClass]="{'is-invalid': passwordNoValido('password2'), 'is-valid': passwordValido('password2')}">
+        @if (passwordNoValido('password2')) {
+          <div class="invalid-feedback d-block">
+            @if (formulario.get('password2')?.errors?.['required']) {
+              Confirmar password requerido
+            } @else if (formulario.get('password2')?.errors?.['minlength']) {
+              Password minimo 8 caracteres
+            }
+          </div>
+        }
       </div>
-
-      @if (passwordCrossValidation) {
+      
+      @if (validacionCruzadaPassword) {
         <div class="alert alert-danger">Las contraseñas no coinciden</div>
       }
 
-      @if (errorMessage) {
-        <div class="alert alert-danger">{{ errorMessage }}</div>
+      @if (mensajeError) {
+        <div class="alert alert-danger">{{ mensajeError }}</div>
       }
 
-      @if (successMessage) {
-        <div class="alert alert-success">{{ successMessage }}</div>
+      @if (mensajeExito) {
+        <div class="alert alert-success">{{ mensajeExito }}</div>
       }
 
-      <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || isSubmitting">
-        {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}
+      <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid || enviando">
+        {{ enviando ? 'Registrando...' : 'Registrarse' }}
       </button>
     </form>
   </div>

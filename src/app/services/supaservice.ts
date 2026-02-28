@@ -1,10 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Planta } from '../plantes/planta';
 import { Registre } from '../plantes/registre';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
-
 
 @Injectable({
   providedIn: 'root',
@@ -12,36 +11,12 @@ import { SupabaseClient, createClient } from '@supabase/supabase-js';
 export class Supaservice {
   private supabase: SupabaseClient;
   private plantesImagesBucket = 'plantes-images';
-  private searchString = signal('');
-  private uiMessage = signal('');
   plantesSignal = signal<Planta[]>([]);
 
   constructor(){
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey)
   }
 
-  // --- Search ---
-  setSearchString(value: string) {
-    this.searchString.set(value);
-  }
-
-  getSearchString() {
-    return this.searchString;
-  }
-
-  setUiMessage(value: string) {
-    this.uiMessage.set(value);
-  }
-
-  getUiMessage() {
-    return this.uiMessage;
-  }
-
-  clearUiMessage() {
-    this.uiMessage.set('');
-  }
-
-  // --- Auth ---
   authChangesObservable() {
     return new Observable<{ event: string; session: any }>(subscriber => {
       this.supabase.auth.onAuthStateChange((event, session) => {
@@ -50,10 +25,11 @@ export class Supaservice {
     });
   }
 
+
   async logout() {
     const { error } = await this.supabase.auth.signOut();
     if (error) {
-      console.error('Error logging out:', error);
+      console.error('Error haciendo log out:', error);
       throw error;
     }
   }
@@ -63,7 +39,7 @@ export class Supaservice {
   async getAllPlantes() {
     const { data, error } = await this.supabase.from('plantes').select('*');
     if (error) {
-      console.error('Error fetching plantes:', error);
+      console.error('Error obteniendo plantas:', error);
       throw error;
     }
     return data;
@@ -81,7 +57,7 @@ export class Supaservice {
       .eq('user', user.id);
 
     if (error) {
-      console.error('Error fetching user plantes:', error);
+      console.error('Error obteniendo plantas del usuario:', error);
       throw error;
     }
 
@@ -116,7 +92,7 @@ export class Supaservice {
   async getAllRegistres() {
     const { data, error } = await this.supabase.from('registres').select('*');
     if (error) {
-      console.error('Error fetching registres:', error);
+      console.error('Error obteniendo registros:', error);
       throw error;
     }
     return data;
@@ -130,7 +106,7 @@ export class Supaservice {
       .eq('id', id)
       .single();
     if (error) {
-      console.error('Error fetching planta:', error);
+      console.error('Error obteniendo planta:', error);
       throw error;
     }
     return data;
@@ -166,7 +142,7 @@ export class Supaservice {
       .single();
 
     if (error) {
-      console.error('Error creating planta:', error);
+      console.error('Error creando planta:', error);
       throw error;
     }
 
@@ -201,7 +177,7 @@ export class Supaservice {
       .single();
 
     if (error) {
-      console.error('Error updating planta:', error);
+      console.error('Error actualizando planta:', error);
       throw error;
     }
 
@@ -215,7 +191,7 @@ export class Supaservice {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting planta:', error);
+      console.error('Error borrando planta:', error);
       throw error;
     }
   }
@@ -229,7 +205,7 @@ export class Supaservice {
       .upload(fileName, file, { upsert: false });
 
     if (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error subiendo imagen:', error);
       throw error;
     }
 
@@ -249,7 +225,7 @@ export class Supaservice {
       .download(path);
 
     if (error) {
-      console.error('Error downloading file:', error);
+      console.error('Error descargando archivo:', error);
       throw error;
     }
 
@@ -272,7 +248,7 @@ export class Supaservice {
       .select('*')
       .eq('planta', plantaId);
     if (error) {
-      console.error('Error fetching registres by planta:', error);
+      console.error('Error obteniendo registros por planta:', error);
       throw error;
     }
     return data;
@@ -283,7 +259,7 @@ export class Supaservice {
   async insertRegistresSupabase(registres: Registre[]) {
     const { error } = await this.supabase.from('registres').insert(registres);
     if (error) {
-      console.error('Error inserting registres:', error);
+      console.error('Error insertando registros:', error);
       throw error;
     }
   }
@@ -291,7 +267,7 @@ export class Supaservice {
   async login(loginData: {email: string, password: string}){
     const { data, error } = await this.supabase.auth.signInWithPassword(loginData);
     if (error) {
-      console.error('Error logging in:', error);
+      console.error('Error iniciando sesion:', error);
       throw error;
     }
     return data;
@@ -300,7 +276,7 @@ export class Supaservice {
   async register(registerData: {email: string, password: string}){
     const { data, error } = await this.supabase.auth.signUp(registerData);
     if (error) {
-      console.error('Error registering:', error);
+      console.error('Error registrando usuario:', error);
       throw error;
     }
     return data;
@@ -309,7 +285,7 @@ export class Supaservice {
   async getCurrentUser() {
     const { data, error } = await this.supabase.auth.getUser();
     if (error) {
-      console.error('Error getting current user:', error);
+      console.error('Error obteniendo usuario actual:', error);
       throw error;
     }
     return data.user;
@@ -326,7 +302,7 @@ export class Supaservice {
       if (error.code === 'PGRST116') {
         return null;
       }
-      console.error('Error fetching profile:', error);
+      console.error('Error obteniendo perfil:', error);
       throw error;
     }
 
@@ -347,7 +323,7 @@ export class Supaservice {
       .single();
 
     if (error) {
-      console.error('Error upserting profile:', error);
+      console.error('Error guardando perfil:', error);
       throw error;
     }
 
